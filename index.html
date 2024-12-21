@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuentas Atrás</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .counter {
+      text-align: center;
+      background-color: #1e1e1e;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1);
+      font-size: 2em;
+      max-width: 80vw;
+      width: 400px;
+      color: #e0e0e0;
+      z-index: 2;
+      margin: 20px;
+    }
+
+    .counter p {
+      margin: 10px 0;
+      font-size: 1em;
+      text-align: center;
+      display: inline;
+    }
+
+    .snowflake {
+      position: absolute;
+      top: -5px;
+      background-color: white;
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+      }
+    }
+
+    @media (min-width: 768px) {
+      .counter {
+        font-size: 2.5em;
+        width: 500px;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .counter {
+        font-size: 3em;
+        width: 600px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Cuentas Atrás</h1>
+
+  <!-- First countdown: Días para las Vacaciones -->
+  <h2>Tiempo para las Vacaciones</h2>
+  <div class="counter">
+    <p id="countdown"></p>
+  </div>
+
+  <!-- Second countdown: Días para Navidad -->
+  <h2>Días para Navidad</h2>
+  <div class="counter">
+    <p id="countdown-christmas"></p>
+  </div>
+
+  <script>
+    let snowflakes = [];
+    const maxSnowflakes = 100;
+
+    // Function to create snowflakes
+    function createSnowflakes() {
+      if (snowflakes.length < maxSnowflakes) {
+        const snowflake = document.createElement("div");
+        snowflake.classList.add("snowflake");
+        const size = Math.random() * 5 + 2;
+        snowflake.style.width = `${size}px`;
+        snowflake.style.height = `${size}px`;
+        const leftPosition = Math.random() * window.innerWidth;
+        snowflake.style.left = `${leftPosition}px`;
+        const duration = Math.random() * 5 + 5;
+        snowflake.style.animationDuration = `${duration}s`;
+        document.body.appendChild(snowflake);
+        snowflakes.push(snowflake);
+      }
+    }
+
+    // Function to update snowflakes using requestAnimationFrame for smoother updates
+    function updateSnowflakes() {
+      snowflakes = snowflakes.filter(snowflake => {
+        const rect = snowflake.getBoundingClientRect();
+        if (rect.bottom >= window.innerHeight) {
+          snowflake.remove();
+          return false;
+        }
+        return true;
+      });
+
+      // Continue the animation loop
+      requestAnimationFrame(updateSnowflakes);
+    }
+
+    // Update countdown timer for Vacaciones
+    function updateCountdown() {
+      const currentDate = new Date();
+      const targetDate = new Date("2024-12-20T14:00:00+01:00");
+      const timeDifference = targetDate - currentDate;
+
+      const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+      document.getElementById("countdown").innerHTML = `${days} <p style="font-size: 16px; display: inline;">Días</p> ${hours} <p style="font-size: 16px; display: inline;">Horas</p> ${minutes} <p style="font-size: 16px; display: inline;">Minutos</p> ${seconds} <p style="font-size: 16px; display: inline;">Segundos</p>`;
+    }
+
+    // Update countdown timer for Navidad
+    function updateCountdownChristmas() {
+      const currentDate = new Date();
+      const targetDate = new Date("2024-12-25T00:00:00+01:00"); // Christmas at 12 AM
+      const timeDifference = targetDate - currentDate;
+
+      const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+      document.getElementById("countdown-christmas").innerHTML = `${days} <p style="font-size: 16px; display: inline;">Días</p> ${hours} <p style="font-size: 16px; display: inline;">Horas</p> ${minutes} <p style="font-size: 16px; display: inline;">Minutos</p> ${seconds} <p style="font-size: 16px; display: inline;">Segundos</p>`;
+    }
+
+    // Initial setup
+    createSnowflakes(); // Create some initial snowflakes
+    setInterval(createSnowflakes, 10); // Create a snowflake every second
+
+    // Start updating snowflakes positions
+    requestAnimationFrame(updateSnowflakes);
+
+    // Update both countdown timers every second
+    setInterval(updateCountdown, 1000);
+    setInterval(updateCountdownChristmas, 1000);
+
+    updateCountdown(); // Initial call to set the countdown for Vacaciones
+    updateCountdownChristmas(); // Initial call to set the countdown for Navidad
+  </script>
+</body>
+</html>
